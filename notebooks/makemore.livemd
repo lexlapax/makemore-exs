@@ -1,0 +1,197 @@
+# makemore
+
+```elixir
+my_app_root = Path.join(__DIR__, "..")
+
+Mix.install(
+  [
+    {:makemore, path: my_app_root, env: :dev},
+    {:kino, "~> 0.7.0"},
+    {:vega_lite, "~> 0.1.6"},
+    {:kino_vega_lite, "~> 0.1.6"}
+  ],
+  # config_path: Path.join(my_app_root, "config/config.exs"),
+  lockfile: Path.join(my_app_root, "mix.lock")
+)
+
+# Mix.install([
+#   {:nx, "~> 0.4.0"},
+#   {:torchx, "~> 0.4.0"},
+# ])
+```
+
+## convenience setup and imports
+
+```elixir
+import IEx.Helpers
+alias VegaLite, as: Vl
+```
+
+```elixir
+filepath = Path.join([__DIR__, "../", "names.txt"])
+words = File.read!(filepath) |> String.split("\n")
+```
+
+```elixir
+Enum.slice(words, 0..9)
+```
+
+```elixir
+length(words)
+```
+
+```elixir
+# max word length assumed to be 255
+Enum.reduce(words, 255, fn x, acc -> min(acc, String.length(x)) end)
+String.length(Enum.min_by(words, fn x -> String.length(x) end))
+```
+
+```elixir
+Enum.reduce(words, 0, fn x, acc -> max(acc, String.length(x)) end)
+String.length(Enum.max_by(words, fn x -> String.length(x) end))
+```
+
+```elixir
+b =
+  Enum.reduce(
+    List.flatten(
+      # Enum.slice(words, 0..9) do
+      for w <- words do
+        chs = String.graphemes("." <> w <> ".")
+
+        Enum.zip(
+          chs,
+          (
+            [_ | t] = chs
+            t
+          )
+        )
+      end
+    ),
+    %{},
+    fn bigram, acc ->
+      exist = Map.get(acc, bigram)
+
+      case exist do
+        nil -> Map.put(acc, bigram, 1)
+        _ -> Map.put(acc, bigram, exist + 1)
+      end
+    end
+  )
+```
+
+```elixir
+# Map.to_list(b)
+Enum.sort(Map.to_list(b), fn x, y ->
+  {_, xval} = x
+  {_, yval} = y
+  xval >= yval
+end)
+```
+
+```elixir
+chars = MapSet.new(String.codepoints(Enum.join(words, "")))
+
+stoi =
+  Enum.reduce(chars, %{"." => 0}, fn x, acc ->
+    Map.put(acc, x, map_size(acc))
+  end)
+
+itos = Map.new(stoi, fn {key, val} -> {val, key} end)
+```
+
+```elixir
+numchars = map_size(Makemore.Utils.stoi(Makemore.Utils.uniq_char(words)))
+# stoi = Makemore.Utils.stoi(chars)
+# bigram map returns 
+sbm_pos = Makemore.Bigram.sorted_desc(Makemore.Bigram.bigram_map(words, true))
+sbm_chars = Makemore.Bigram.sorted_desc(Makemore.Bigram.bigram_map(words, false))
+# {positions, vallist1}  = Makemore.Bigram.bgram_to_mat(sbm_pos)
+# labels
+```
+
+```elixir
+nt = Nx.reshape(Nx.tensor(vallist, type: :u16), {numchars, numchars}, names: [:rows, :cols])
+# nt = Makemore.Bigram.create_tensor(filepath)
+Nx.to_heatmap(nt)
+```
+
+```elixir
+charkeys = stoi |> Map.keys() |> Enum.sort()
+# numkeys=itos |> Map.keys() |> Enum.sort()
+# Enum.into(Enum.zip(charkeys, numkeys), %{})
+data =
+  Nx.to_batched(nt, 1)
+  |> Enum.to_list()
+  |> Enum.map(fn x -> Nx.to_flat_list(x) end)
+  # |> Enum.zip(charkeys)
+  # |> Enum.into(%{})
+  # |> Map.new(fn {key, val} -> {val, key} end) end)
+  |> Enum.zip(charkeys)
+  |> Enum.into(%{})
+  |> Map.new(fn {key, val} -> {val, key} end)
+
+# |> JSON.encode!
+# Kino.DataTable.new(data)
+# bm=Makemore.Bigram.bigram_map(words, false)
+# Map.get(bm, {"c", "."})
+```
+
+```elixir
+bg = Makemore.Bigram.bigram_map(Enum.slice(words, 0..1), false)
+```
+
+## play
+
+```elixir
+
+```
+
+```elixir
+bg = Makemore.Bigram.bigram_map(words, false)
+map_size(bg)
+# stoi
+```
+
+```elixir
+defmodule Makemore.Test do
+  def pad_bigrams(stoi, bigrams) do
+    Enum.reduce(stoi, %{}, fn outer_tuple, acc ->
+      {xchar, _} = outer_tuple
+
+      acc2 =
+        Enum.reduce(stoi, %{}, fn inner_tuple, inner_acc ->
+          {ychar, _} = inner_tuple
+          value = Map.get(bigrams, {xchar, ychar}, 0)
+          Map.put(inner_acc, {xchar, ychar}, value)
+        end)
+
+      Map.merge(acc, acc2)
+    end)
+  end
+end
+```
+
+```elixir
+pbg = Makemore.Test.pad_bigrams(stoi, bg)
+map_size(pbg)
+```
+
+```elixir
+# paddedbg = Makemore.Test.pad_bigrams(stoi, bg)
+test1 = %{{"a", "a"} => 1, {"a", "b"} => 2, {"b", "a"} => 3, {"b", "b"} => 4}
+teststoi = %{"." => 0, "a" => 1, "b" => 1, "c" => 3, "d" => 1}
+
+Enum.reduce(teststoi, %{}, fn outer_tuple, acc ->
+  {xchar, _} = outer_tuple
+
+  acc2 =
+    Enum.reduce(teststoi, %{}, fn inner_tuple, inner_acc ->
+      {ychar, _} = inner_tuple
+      value = Map.get(test1, {xchar, ychar}, 0)
+      Map.put(inner_acc, {xchar, ychar}, value)
+    end)
+
+  Map.merge(acc, acc2)
+end)
+```
