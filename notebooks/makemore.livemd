@@ -103,15 +103,17 @@ itos = Map.new(stoi, fn {key, val} -> {val, key} end)
 ```elixir
 numchars = map_size(Makemore.Utils.stoi(Makemore.Utils.uniq_char(words)))
 # stoi = Makemore.Utils.stoi(chars)
+Makemore.Bigram.bigram_map(words, true)
 # bigram map returns 
-sbm_pos = Makemore.Bigram.sorted_desc(Makemore.Bigram.bigram_map(words, true))
-sbm_chars = Makemore.Bigram.sorted_desc(Makemore.Bigram.bigram_map(words, false))
-{pos_list, vallist1} = Makemore.Bigram.bgram_to_mat(sbm_pos)
-{label_list, vallist2} = Makemore.Bigram.bgram_to_mat(sbm_chars)
-vallist1 == vallist2
-i(pos_list)
-i("--")
-i(label_list)
+# sbm_pos = Makemore.Bigram.sorted_desc(Makemore.Bigram.bigram_map(words, true))
+# sbm_chars = Makemore.Bigram.sorted_desc(Makemore.Bigram.bigram_map(words, false))
+# {pos_list, vallist1}  = Makemore.Bigram.bgram_to_mat(sbm_pos)
+# {label_list, vallist2}  = Makemore.Bigram.bgram_to_mat(sbm_chars)
+# vallist1 == vallist2
+# i pos_list
+# i "--"
+# i label_list
+Makemore.Bigram.bigrams_from_word("1")
 ```
 
 ```elixir
