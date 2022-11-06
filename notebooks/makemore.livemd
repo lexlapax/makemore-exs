@@ -106,8 +106,12 @@ numchars = map_size(Makemore.Utils.stoi(Makemore.Utils.uniq_char(words)))
 # bigram map returns 
 sbm_pos = Makemore.Bigram.sorted_desc(Makemore.Bigram.bigram_map(words, true))
 sbm_chars = Makemore.Bigram.sorted_desc(Makemore.Bigram.bigram_map(words, false))
-# {positions, vallist1}  = Makemore.Bigram.bgram_to_mat(sbm_pos)
-# labels
+{pos_list, vallist1} = Makemore.Bigram.bgram_to_mat(sbm_pos)
+{label_list, vallist2} = Makemore.Bigram.bgram_to_mat(sbm_chars)
+vallist1 == vallist2
+i(pos_list)
+i("--")
+i(label_list)
 ```
 
 ```elixir
