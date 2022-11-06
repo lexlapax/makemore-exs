@@ -1,11 +1,12 @@
 # Makemore
 Makemore elixis based on the teachings of [Andrej Karpathy | github](https://github.com/karpathy)
 
-Take a look at https://github.com/karpathy/nn-zero-to-hero
-
-Specifically the jupyter notebook https://github.com/karpathy/nn-zero-to-hero/blob/master/lectures/makemore/makemore_part2_mlp.ipynb
-
-The series is culminated at https://github.com/karpathy/makemore
+> Take a look at https://github.com/karpathy/nn-zero-to-hero
+> 
+> Specifically the jupyter notebooks https://github.com/karpathy/nn-zero-to-hero/tree/master/lectures/makemore 
+that I've tried to recreate in [Elixir Livebooks](https://livebook.dev/)
+> 
+> The series is culminated at https://github.com/karpathy/makemore that's runnable code in one python script. 
 
 This is not elixir magic, at most, it's my humble beginnings in learning 
 - functional programming for pragmatic reasons.. produce code in production everywhere that is functional
