@@ -1,5 +1,5 @@
 # Makemore
-Makemore elixis based on the teachings of Andrej Karpathy
+Makemore elixis based on the teachings of [Andrej Karpathy | github](https://github.com/karpathy)
 
 Take a look at https://github.com/karpathy/nn-zero-to-hero
 
