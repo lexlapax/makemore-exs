@@ -101,19 +101,16 @@ itos = Map.new(stoi, fn {key, val} -> {val, key} end)
 ```
 
 ```elixir
+# whether to work on characters in bigram map or integers 0 = ., a =1 etc
+ints = true
+words = Makemore.Utils.file_to_words(filepath)
 numchars = map_size(Makemore.Utils.stoi(Makemore.Utils.uniq_char(words)))
-# stoi = Makemore.Utils.stoi(chars)
-Makemore.Bigram.bigram_map(words, true)
-# bigram map returns 
-# sbm_pos = Makemore.Bigram.sorted_desc(Makemore.Bigram.bigram_map(words, true))
-# sbm_chars = Makemore.Bigram.sorted_desc(Makemore.Bigram.bigram_map(words, false))
+## see below vallist1 and vallist is the same
+_ = Makemore.Bigram.sorted_desc(Makemore.Bigram.bigram_map(words, ints))
 # {pos_list, vallist1}  = Makemore.Bigram.bgram_to_mat(sbm_pos)
-# {label_list, vallist2}  = Makemore.Bigram.bgram_to_mat(sbm_chars)
-# vallist1 == vallist2
-# i pos_list
-# i "--"
-# i label_list
-Makemore.Bigram.bigrams_from_word("1")
+sbm_chars = Makemore.Bigram.sorted_desc(Makemore.Bigram.bigram_map(words, ints))
+{_label_list, vallist} = Makemore.Bigram.bgram_to_mat(sbm_chars)
+# vallist1 == vallist is true
 ```
 
 ```elixir
@@ -138,66 +135,20 @@ data =
   |> Map.new(fn {key, val} -> {val, key} end)
 
 # |> JSON.encode!
-# Kino.DataTable.new(data)
-# bm=Makemore.Bigram.bigram_map(words, false)
-# Map.get(bm, {"c", "."})
 ```
 
 ```elixir
-bg = Makemore.Bigram.bigram_map(Enum.slice(words, 0..1), false)
+#Kino.DataTable.new(data)
+vl = Vl.new(height: 400, width: 400)
+  |> Vl.
+  |> Vl.data_from_values(data)
+  |> Vl.mark(:rect)
+  |> Vl.
+
 ```
 
 ## play
 
 ```elixir
 
-```
-
-```elixir
-bg = Makemore.Bigram.bigram_map(words, false)
-map_size(bg)
-# stoi
-```
-
-```elixir
-defmodule Makemore.Test do
-  def pad_bigrams(stoi, bigrams) do
-    Enum.reduce(stoi, %{}, fn outer_tuple, acc ->
-      {xchar, _} = outer_tuple
-
-      acc2 =
-        Enum.reduce(stoi, %{}, fn inner_tuple, inner_acc ->
-          {ychar, _} = inner_tuple
-          value = Map.get(bigrams, {xchar, ychar}, 0)
-          Map.put(inner_acc, {xchar, ychar}, value)
-        end)
-
-      Map.merge(acc, acc2)
-    end)
-  end
-end
-```
-
-```elixir
-pbg = Makemore.Test.pad_bigrams(stoi, bg)
-map_size(pbg)
-```
-
-```elixir
-# paddedbg = Makemore.Test.pad_bigrams(stoi, bg)
-test1 = %{{"a", "a"} => 1, {"a", "b"} => 2, {"b", "a"} => 3, {"b", "b"} => 4}
-teststoi = %{"." => 0, "a" => 1, "b" => 1, "c" => 3, "d" => 1}
-
-Enum.reduce(teststoi, %{}, fn outer_tuple, acc ->
-  {xchar, _} = outer_tuple
-
-  acc2 =
-    Enum.reduce(teststoi, %{}, fn inner_tuple, inner_acc ->
-      {ychar, _} = inner_tuple
-      value = Map.get(test1, {xchar, ychar}, 0)
-      Map.put(inner_acc, {xchar, ychar}, value)
-    end)
-
-  Map.merge(acc, acc2)
-end)
 ```

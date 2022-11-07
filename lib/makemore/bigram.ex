@@ -13,8 +13,8 @@ defmodule Makemore.Bigram do
     --- {[list of bigram tuple], [list of counts]} e.g { } or    --- {[list of bigram tuple index (sorted)], [list of counts]}
     -
   """
-  def create_tensor(file, ints \\ true) do
-    words = Makemore.Utils.file_to_words(file)
+  def create_tensor(filepath, ints \\ true) do
+    words = Makemore.Utils.file_to_words(filepath)
     numchars = map_size(Makemore.Utils.stoi(Makemore.Utils.uniq_char(words)))
     ## see below vallist1 and vallist is the same
     _ = Makemore.Bigram.sorted_desc(Makemore.Bigram.bigram_map(words, ints))
